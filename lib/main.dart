@@ -72,14 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     @override
     Widget build(BuildContext context) {
-        if (categories.isEmpty) {
-            // Show loading indicator while data is not ready
-            return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-                backgroundColor: Colors.grey
-            );
-        }
-
         return Scaffold(
             appBar: AppBar(
                 title: const Text('Choose a Category'),
