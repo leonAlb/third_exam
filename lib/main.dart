@@ -47,6 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _data = await loadJsonFromAssets(
             'assets/data/mobile-apps-portfolio-03-recipes.json'
         );
+        setState(() {
+                categories = _categories(_data);
+            });
     }
 
     Future<Map<String, dynamic>> loadJsonFromAssets(String filePath) async {
@@ -55,19 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Set<String> _categories(Map<String, dynamic> data) {
-        if (data.containsKey('recipes') && data['recipes'] != null) {
-            return data['recipes']
-                .map<String>((recipe) => recipe['category'] as String)
-                .toSet();
-        } else {
-            return {};
-        }
+        return data['recipes']
+            .map<String>((recipe) => recipe['category'] as String)
+            .toSet();
     }
 
-    Set<Map<String, dynamic>> _recipesOfCategory(
-        Map<String, dynamic> data,
-        String category
-    ) {
+    Set<Map<String, dynamic>> _recipesOfCategory(Map<String, dynamic> data, String category) {
         return data['recipes']
             .where((recipe) => recipe['category'] == category)
             .cast<Map<String, dynamic>>()
@@ -76,7 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     @override
     Widget build(BuildContext context) {
-        categories = _categories(_data);
+        if (categories.isEmpty) {
+            // Show loading indicator while data is not ready
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+                backgroundColor: Colors.grey
+            );
+        }
 
         return Scaffold(
             appBar: AppBar(
@@ -107,7 +109,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Set<Map<String, dynamic>> categoryRecipes = _recipesOfCategory(_data, category);
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => RecipeListScreen(recipes: categoryRecipes, category: upperCaseCategory))
+                                    MaterialPageRoute(
+                                        builder: (context) => RecipeListScreen(
+                                            recipes: categoryRecipes,
+                                            category: upperCaseCategory
+                                        )
+                                    )
                                 );
                             }
                         )
@@ -134,6 +141,6 @@ String getCategoryFlag(String category) {
         case 'turkish':
             return '🇹🇷';
         default:
-            return '🏳️';
+        return '🏳️';
     }
 }
